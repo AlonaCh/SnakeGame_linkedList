@@ -1,14 +1,16 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import Platform from './Platform/Platform.jsx'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import Platform from './platform/Platform.jsx';
+import './index.css'
 
-ReactDOM.render(
-  <React.StrictMode>
-    <Platform />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+export default function App() {
 
+  return (
+    <>
+      <div>
+        <Platform />
+      </div>
+    </>
+  )
+}
 
