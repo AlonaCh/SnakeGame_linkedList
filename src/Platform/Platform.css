@@ -1,6 +1,11 @@
+body {
+  margin: 0;
+}
+
 .platform {
   outline: 2px solid grey;
 }
+
 .row {
   height: 50px;
 }
@@ -15,16 +20,4 @@
 }
 .food-cell {
   background-color: black;
-}
-
-.cell-green {
-  background-color: green;
-}
-
-.cell-red {
-  background-color: red;
-}
-
-.cell-purple {
-  background-color: purple;
 }

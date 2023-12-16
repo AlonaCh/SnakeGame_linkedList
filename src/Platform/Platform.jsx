@@ -160,7 +160,8 @@ export default function Platform() {
 
   return (
     <>
-      <h1>Score: {score}</h1>
+      <h1>Snake game</h1>
+      <h2>Score: {score}</h2>
       <div className="platform">
         {platform.map((row, rowIdx) => (
           <div key={rowIdx} className="row">
@@ -275,8 +276,8 @@ const getOppositeDirection = (direction) => {
 const getCellClassName = (cellValue, foodCell, snakeCells) => {
   let className = "cell";
   if (cellValue === foodCell) {
-    className = "cell cell-red";
+    className = "cell food-cell";
   }
-  if (snakeCells.has(cellValue)) className = "cell cell-green";
+  if (snakeCells.has(cellValue)) className = "cell snake-cell";
   return className;
 };
