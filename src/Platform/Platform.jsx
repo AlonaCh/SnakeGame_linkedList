@@ -43,6 +43,7 @@ export default function Platform() {
   const [score, setScore] = useState(0);
   //Board
   const [gameOn, setGameOn] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
   const [platform, setPlatform] = useState(createPlatform(PLATFORM_SIZE)); //board
   const [snake, setSnake] = useState(
     new LinkedList(getStartingSnakeLinkedListValue(platform))
@@ -53,6 +54,7 @@ export default function Platform() {
   const [foodCell, setFoodCell] = useState(snake.head.value.cell + 5);
 
   const startHandler = () => {
+    setGameOver(false);
     setGameOn(true);
   };
 
@@ -93,12 +95,14 @@ export default function Platform() {
     if (isOutOfBorders(nextHeadPosition, platform)) {
       handleGameOver();
       setGameOn(false);
+      setGameOver(true);
       return;
     }
     const nextHeadCell = platform[nextHeadPosition.row][nextHeadPosition.col];
     if (snCells.has(nextHeadCell)) {
       handleGameOver();
       setGameOn(false);
+      setGameOver(true);
       return;
     }
 
@@ -158,7 +162,6 @@ export default function Platform() {
   };
 
   const handleGameOver = () => {
-    setScore(0);
     const snakeLinkedListStartingValue =
       getStartingSnakeLinkedListValue(platform);
     setSnake(new LinkedList(snakeLinkedListStartingValue));
@@ -170,7 +173,11 @@ export default function Platform() {
   return (
     <>
       <h1>Snake game</h1>
-      <h2>Score: {score}</h2>
+      {!gameOver ? (
+        <h2>Score: {score}</h2>
+      ) : (
+        <h2>Game is over! Congratulations, your score is {score}!</h2>
+      )}
       <button className="startClass" onClick={startHandler}>
         Start the game
       </button>
