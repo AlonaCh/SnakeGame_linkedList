@@ -55,6 +55,7 @@ export default function Platform() {
 
   const startHandler = () => {
     setGameOver(false);
+    setScore(0);
     setGameOn(true);
   };
 
@@ -116,7 +117,7 @@ export default function Platform() {
     currentHead.next = newHead;
 
     const newSnCells = new Set(snCells);
-    newSnCells.delete(snake.tail.value.value);
+    newSnCells.delete(snake.tail.value.cell);
     newSnCells.add(nextHeadCell);
 
     snake.tail = snake.tail.next;
@@ -178,9 +179,16 @@ export default function Platform() {
       ) : (
         <h2>Game is over! Congratulations, your score is {score}!</h2>
       )}
-      <button className="startClass" onClick={startHandler}>
-        Start the game
-      </button>
+      {gameOn ? (
+        <button className="gameOnClass" onClick={startHandler} disabled>
+          Start game
+        </button>
+      ) : (
+        <button className="startClass" onClick={startHandler}>
+          Start game
+        </button>
+      )}
+
       <div className="platform">
         {platform.map((row, rowIdx) => (
           <div key={rowIdx} className="row">

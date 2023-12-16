@@ -1,5 +1,7 @@
 body {
   margin: 0;
+  font-family: "Roboto Mono", monospace;
+  font-weight: 100;
 }
 
 .platform {
@@ -20,4 +22,21 @@ body {
 }
 .food-cell {
   background-color: black;
+}
+
+.startClass {
+  border: none;
+  margin: 20px;
+  background-color: rgb(143, 82, 199);
+  color: white;
+  padding: 10px;
+}
+
+.gameOnClass {
+  border: none;
+  margin: 20px;
+  background-color: rgb(143, 82, 199);
+  color: white;
+  padding: 10px;
+  opacity: 0.2;
 }
