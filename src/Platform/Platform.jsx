@@ -92,11 +92,13 @@ export default function Platform() {
     );
     if (isOutOfBorders(nextHeadPosition, platform)) {
       handleGameOver();
+      setGameOn(false);
       return;
     }
     const nextHeadCell = platform[nextHeadPosition.row][nextHeadPosition.col];
     if (snCells.has(nextHeadCell)) {
       handleGameOver();
+      setGameOn(false);
       return;
     }
 
