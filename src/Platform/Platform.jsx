@@ -52,6 +52,10 @@ export default function Platform() {
   const [direction, setDirection] = useState(Direction.RIGHT);
   const [foodCell, setFoodCell] = useState(snake.head.value.cell + 5);
 
+  const startHandler = () => {
+    setGameOn(true);
+  };
+
   useEffect(() => {
     window.addEventListener("keydown", (e) => {
       handleKeydown(e);
@@ -59,7 +63,7 @@ export default function Platform() {
   }, []);
 
   useInterval(() => {
-    if (setGameOn(!gameOn)) {
+    if (gameOn) {
       moveSnake();
     }
   }, 500);
@@ -165,6 +169,9 @@ export default function Platform() {
     <>
       <h1>Snake game</h1>
       <h2>Score: {score}</h2>
+      <button className="startClass" onClick={startHandler}>
+        Start the game
+      </button>
       <div className="platform">
         {platform.map((row, rowIdx) => (
           <div key={rowIdx} className="row">
