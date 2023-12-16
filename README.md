@@ -14,9 +14,11 @@ Game start:
 ![Picture of the snake game start](public/gameStart.png)
 
 Game going on:
+
 ![Picture of the snake game going on](public/gameOn.png)
 
 Game over:
+
 ![Picture of the snake game over](public/gameOver.png)
 
 ## Sources
