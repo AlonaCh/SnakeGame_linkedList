@@ -42,6 +42,7 @@ const getStartingSnakeLinkedListValue = (platform) => {
 export default function Platform() {
   const [score, setScore] = useState(0);
   //Board
+  const [gameOn, setGameOn] = useState(false);
   const [platform, setPlatform] = useState(createPlatform(PLATFORM_SIZE)); //board
   const [snake, setSnake] = useState(
     new LinkedList(getStartingSnakeLinkedListValue(platform))
@@ -58,7 +59,9 @@ export default function Platform() {
   }, []);
 
   useInterval(() => {
-    moveSnake();
+    if (setGameOn(!gameOn)) {
+      moveSnake();
+    }
   }, 500);
 
   const handleKeydown = (e) => {
