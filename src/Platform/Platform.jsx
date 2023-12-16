@@ -179,15 +179,12 @@ export default function Platform() {
       ) : (
         <h2>Game is over! Congratulations, your score is {score}!</h2>
       )}
-      {gameOn ? (
-        <button className="gameOnClass" onClick={startHandler} disabled>
-          Start game
-        </button>
-      ) : (
-        <button className="startClass" onClick={startHandler}>
-          Start game
-        </button>
-      )}
+      <button
+        className={gameOn ? "gameOnClass" : "startClass"}
+        onClick={startHandler}
+      >
+        Start game
+      </button>
 
       <div className="platform">
         {platform.map((row, rowIdx) => (
