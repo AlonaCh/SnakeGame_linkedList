@@ -16,3 +16,15 @@
 .food-cell {
   background-color: black;
 }
+
+.cell-green {
+  background-color: green;
+}
+
+.cell-red {
+  background-color: red;
+}
+
+.cell-purple {
+  background-color: purple;
+}

@@ -1,4 +1,4 @@
-import Platform from "./platform/Platform.jsx";
+import Platform from "./Platform/Platform";
 import "./index.css";
 
 export default function App() {

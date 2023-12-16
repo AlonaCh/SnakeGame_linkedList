@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { randomInt, reverseLL, useInterval } from "../lib/utils.js";
 import "./Platform.css";
 
 class LinkedListNode {
@@ -15,15 +16,9 @@ class LinkedList {
     this.tail = node;
   }
 }
-class Cell {
-  constructor(row, col, value) {
-    this.row = row;
-    this.col = col;
-    this.value = value;
-  }
-}
 
 const PLATFORM_SIZE = 10; //BOARD_SIZE
+const PROBABILITY_OF_DIRECTION_REVERSAL_FOOD = 0.3;
 
 const Direction = {
   UP: "UP",
@@ -32,29 +27,54 @@ const Direction = {
   LEFT: "LEFT",
 };
 
+const getStartingSnakeLinkedListValue = (platform) => {
+  const rowSize = platform.length;
+  const colSize = platform[0].length;
+  const startingRow = Math.round(rowSize / 3);
+  const startingCol = Math.round(colSize / 3);
+  const startingCell = platform[startingRow][startingCol];
+  return {
+    row: startingRow,
+    col: startingCol,
+    cell: startingCell,
+  };
+};
+
 export default function Platform() {
   const [score, setScore] = useState(0);
   //Board
   const [platform, setPlatform] = useState(createPlatform(PLATFORM_SIZE)); //board
-  const [snCells, setSnCells] = useState(new Set([44])); // snakeCells
-  const [snake, setSnake] = useState(new LinkedList(new Cell(4, 3, 44))); // snake will start at 44
+  const [snake, setSnake] = useState(
+    new LinkedList(getStartingSnakeLinkedListValue(platform))
+  );
+  const [snCells, setSnCells] = useState(new Set([snake.head.value.cell])); // snakeCells
+
   const [direction, setDirection] = useState(Direction.RIGHT);
-  const [foodCell, setFoodCell] = useState(48);
+  const [foodCell, setFoodCell] = useState(snake.head.value.cell + 5);
   const [foodShouldReverseDirection, setFoodShouldReverseDirection] =
     useState(false);
 
   useEffect(() => {
-    setInterval(() => {
-      moveSnake();
-    }, 1000);
     window.addEventListener("keydown", (e) => {
-      const newDirection = getDirectionFromKey(e.key);
-      const isValidDirection = newDirection !== "";
-      if (isValidDirection) setDirection(newDirection);
+      handleKeydown(e);
     });
   }, []);
 
-  function moveSnake() {
+  useInterval(() => {
+    moveSnake();
+  }, 150);
+
+  const handleKeydown = (e) => {
+    const newDirection = getDirectionFromKey(e.key);
+    const isValidDirection = newDirection !== "";
+    if (!isValidDirection) return;
+    const snWillRunIntoItself =
+      getOppositeDirection(newDirection) === direction && snCells.size > 1;
+    if (snWillRunIntoItself) return;
+    setDirection(newDirection);
+  };
+
+  const moveSnake = () => {
     const currentHeadPosition = {
       // currentHeadCoords
       row: snake.head.value.row,
@@ -66,7 +86,7 @@ export default function Platform() {
       currentHeadPosition,
       direction
     );
-    if (isOutOfBorders(nextHeadPosition, board)) {
+    if (isOutOfBorders(nextHeadPosition, platform)) {
       handleGameOver();
       return;
     }
@@ -99,10 +119,9 @@ export default function Platform() {
       handleFoodConsumption(newSnCells);
     }
 
-    /*  cellsRef.current = newCells; */
     setSnCells(newSnCells);
-  }
-  const growSnake = () => {
+  };
+  const growSnake = (newSnCells) => {
     const growthNodePosition = getGrowthNodePosition(snake.tail, direction);
     if (isOutOfBorders(growthNodePosition, platform)) {
       return;
@@ -118,38 +137,19 @@ export default function Platform() {
     snake.tail = newTail;
     snake.tail.next = currentTail;
 
-    const newSnCells = new Set(snCells);
     newSnCells.add(newTailCell);
-
-    setSnCells(newSnCells);
   };
 
-  const getNextHeadPosition = (currentHeadPosition, direction) => {
-    if (direction === Direction.UP) {
-      return {
-        row: currentHeadPosition.row - 1,
-        col: currentHeadPosition.col,
-      };
-    }
-    if (direction === Direction.RIGHT) {
-      return {
-        row: currentHeadPosition.row,
-        col: currentHeadPosition.col + 1,
-      };
-    }
-    if (direction === Direction.DOWN) {
-      return {
-        row: currentHeadPosition.row + 1,
-        col: currentHeadPosition.col,
-      };
-    }
-    if (direction === Direction.LEFT) {
-      return {
-        row: currentHeadPosition.row,
-        col: currentHeadPosition.col - 1,
-      };
-    }
+  const reverseSn = () => {
+    const tailNextNodeDirection = getNextNodeDirection(snake.tail, direction);
+    const newDirection = getOppositeDirection(tailNextNodeDirection);
+    setDirection(newDirection);
+    reverseLL(snake.tail);
+    const snakeHead = snake.head;
+    snake.head = snake.tail;
+    snake.tail = snakeHead;
   };
+
   const handleFoodConsumption = () => {
     const maxPossibleCellValue = PLATFORM_SIZE * PLATFORM_SIZE;
     let nextFoodCell;
@@ -158,30 +158,45 @@ export default function Platform() {
       if (snCells.has(nextFoodCell) || foodCell === nextFoodCell) continue;
       break;
     }
+    const nextFoodShouldReverseDirection =
+      Math.random() < PROBABILITY_OF_DIRECTION_REVERSAL_FOOD;
     setFoodCell(nextFoodCell);
+    setFoodShouldReverseDirection(nextFoodShouldReverseDirection);
+    setScore(score + 1);
+  };
+
+  const handleGameOver = () => {
+    setScore(0);
+    const snakeLinkedListStartingValue =
+      getStartingSnakeLinkedListValue(platform);
+    setSnake(new LinkedList(snakeLinkedListStartingValue));
+    setFoodCell(snakeLinkedListStartingValue.cell + 5);
+    setSnCells(new Set([snakeLinkedListStartingValue.cell]));
+    setDirection(Direction.RIGHT);
   };
 
   return (
     <>
       <h1>Score: {score}</h1>
-      <button onClick={() => moveSnake()}>Move Manually</button>
-      <button onClick={() => growSnake()}>Grow Snake Manually</button>
       <div className="platform">
         {platform.map((row, rowIdx) => (
           <div key={rowIdx} className="row">
-            {row.map((cellValue, cellIdx) => (
-              <div
-                key={cellIdx}
-                className={`cell ${snCells.has(cellValue) ? "snake-cell" : ""}
-                ${foodCell === cellValue ? "food-cell" : ""}`}
-              ></div>
-            ))}
+            {row.map((cellValue, cellIdx) => {
+              const className = getCellClassName(
+                cellValue,
+                foodCell,
+                foodShouldReverseDirection,
+                snCells
+              );
+              return <div key={cellIdx} className={className}></div>;
+            })}
           </div>
         ))}
       </div>
     </>
   );
-} // end of Platform
+}
+// end of Platform
 
 //functions used above
 
@@ -279,6 +294,21 @@ const getOppositeDirection = (direction) => {
   if (direction === Direction.LEFT) return Direction.RIGHT;
 };
 
-function randomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
+const getCellClassName = (
+  cellValue,
+  foodCell,
+  foodShouldReverseDirection,
+  snakeCells
+) => {
+  let className = "cell";
+  if (cellValue === foodCell) {
+    if (foodShouldReverseDirection) {
+      className = "cell cell-purple";
+    } else {
+      className = "cell cell-red";
+    }
+  }
+  if (snakeCells.has(cellValue)) className = "cell cell-green";
+
+  return className;
+};
