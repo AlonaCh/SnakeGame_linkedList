@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { randomInt, reverseLL, useInterval } from "../lib/utils.js";
+import { randomInt, useInterval } from "../lib/utils.js";
 import "./Platform.css";
 
 class LinkedListNode {
@@ -18,7 +18,6 @@ class LinkedList {
 }
 
 const PLATFORM_SIZE = 10; //BOARD_SIZE
-const PROBABILITY_OF_DIRECTION_REVERSAL_FOOD = 0.3;
 
 const Direction = {
   UP: "UP",
@@ -51,8 +50,6 @@ export default function Platform() {
 
   const [direction, setDirection] = useState(Direction.RIGHT);
   const [foodCell, setFoodCell] = useState(snake.head.value.cell + 5);
-  const [foodShouldReverseDirection, setFoodShouldReverseDirection] =
-    useState(false);
 
   useEffect(() => {
     window.addEventListener("keydown", (e) => {
@@ -62,7 +59,7 @@ export default function Platform() {
 
   useInterval(() => {
     moveSnake();
-  }, 150);
+  }, 500);
 
   const handleKeydown = (e) => {
     const newDirection = getDirectionFromKey(e.key);
@@ -115,7 +112,6 @@ export default function Platform() {
     const foodConsumed = nextHeadCell === foodCell;
     if (foodConsumed) {
       growSnake(newSnCells);
-      if (foodShouldReverseDirection) reverseSn();
       handleFoodConsumption(newSnCells);
     }
 
@@ -140,16 +136,6 @@ export default function Platform() {
     newSnCells.add(newTailCell);
   };
 
-  const reverseSn = () => {
-    const tailNextNodeDirection = getNextNodeDirection(snake.tail, direction);
-    const newDirection = getOppositeDirection(tailNextNodeDirection);
-    setDirection(newDirection);
-    reverseLL(snake.tail);
-    const snakeHead = snake.head;
-    snake.head = snake.tail;
-    snake.tail = snakeHead;
-  };
-
   const handleFoodConsumption = () => {
     const maxPossibleCellValue = PLATFORM_SIZE * PLATFORM_SIZE;
     let nextFoodCell;
@@ -158,10 +144,7 @@ export default function Platform() {
       if (snCells.has(nextFoodCell) || foodCell === nextFoodCell) continue;
       break;
     }
-    const nextFoodShouldReverseDirection =
-      Math.random() < PROBABILITY_OF_DIRECTION_REVERSAL_FOOD;
     setFoodCell(nextFoodCell);
-    setFoodShouldReverseDirection(nextFoodShouldReverseDirection);
     setScore(score + 1);
   };
 
@@ -182,12 +165,7 @@ export default function Platform() {
         {platform.map((row, rowIdx) => (
           <div key={rowIdx} className="row">
             {row.map((cellValue, cellIdx) => {
-              const className = getCellClassName(
-                cellValue,
-                foodCell,
-                foodShouldReverseDirection,
-                snCells
-              );
+              const className = getCellClassName(cellValue, foodCell, snCells);
               return <div key={cellIdx} className={className}></div>;
             })}
           </div>
@@ -294,21 +272,11 @@ const getOppositeDirection = (direction) => {
   if (direction === Direction.LEFT) return Direction.RIGHT;
 };
 
-const getCellClassName = (
-  cellValue,
-  foodCell,
-  foodShouldReverseDirection,
-  snakeCells
-) => {
+const getCellClassName = (cellValue, foodCell, snakeCells) => {
   let className = "cell";
   if (cellValue === foodCell) {
-    if (foodShouldReverseDirection) {
-      className = "cell cell-purple";
-    } else {
-      className = "cell cell-red";
-    }
+    className = "cell cell-red";
   }
   if (snakeCells.has(cellValue)) className = "cell cell-green";
-
   return className;
 };
