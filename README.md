@@ -1,3 +1,5 @@
+![example branch](https://github.com/AlonaCh/SnakeGame_linkedList/actions/workflows/WORKFLOW-FILE/badge.svg)
+
 # Snake game
 
 ## Description
