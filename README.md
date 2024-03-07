@@ -1,4 +1,4 @@
-![example branch](https://github.com/AlonaCh/SnakeGame_linkedList/actions/workflows/WORKFLOW-FILE/badge.svg)
+![example branch](https://github.com/AlonaCh/SnakeGame_linkedList/actions/workflows/github-actions-demo.yml/badge.svg)
 
 # Snake game
 
